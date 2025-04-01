@@ -1,9 +1,6 @@
 /.vscode
-/Assembly-CSharp-Editor.csproj
-/Assembly-CSharp.csproj
-/CodeMonkeyFree.csproj
-/CodeMonkeyFreeEditor.csproj
 /Library
 /Logs
-/MultiPlayerCooking.sln
 /Temp
+*.sln
+*.csproj
