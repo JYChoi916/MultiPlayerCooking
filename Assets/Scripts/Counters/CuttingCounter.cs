@@ -22,9 +22,12 @@ public class CuttingCounter : BaseCounter
             player.GetKitchenObject().SetKitchenObjectParent(this);
         }
         else {
-            if (!player.HasKitchenObject() && HasKitchenObject())
+            CuttingRecipeSO correctRecipeSO = GetCorrectCuttingRecipe(GetKitchenObject().GetKitchenObjectSO());            
+            bool isCutting = (cuttingProgress > 0 && cuttingProgress < correctRecipeSO.cuttingProgressMax);
+            if (!player.HasKitchenObject() && HasKitchenObject() && isCutting == false)
             {
                 GetKitchenObject().SetKitchenObjectParent(player);
+                cuttingProgress = 0;
             }
         }
     }
