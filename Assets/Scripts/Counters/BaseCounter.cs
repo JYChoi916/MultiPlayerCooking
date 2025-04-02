@@ -3,7 +3,7 @@ using UnityEngine;
 public class BaseCounter : MonoBehaviour, IKitchenObjectParent
 {
     [SerializeField] protected Transform counterTopPoint;
-    [SerializeField] protected KitchenObjectSO kitchenObjectSO;
+
     protected KitchenObject kitchenObject;
 
     public Transform GetKitchenObjectFollowTransform() {
@@ -27,4 +27,5 @@ public class BaseCounter : MonoBehaviour, IKitchenObjectParent
     }
 
     public virtual void Interact(Player player) {}
+    public virtual void InteractAlternate(Player player) {}
 }
