@@ -82,7 +82,7 @@ public class StoveCounter : BaseCounter, IHasProgress
                             state = state
                         });
                     }
-                    
+
                     OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs {
                         progressAmount = burningTimer / burningRecipeSO.burningTimerMax
                     });                     
@@ -96,42 +96,98 @@ public class StoveCounter : BaseCounter, IHasProgress
 
     public override void Interact(Player player)
     {
-        if (player.HasKitchenObject() && !HasKitchenObject())
+        if (!HasKitchenObject())
         {
-            // 플레이어의 주방 오브젝트를 이 카운터의 자식으로 설정
-            player.GetKitchenObject().SetKitchenObjectParent(this);
+            // 이 카운터가 오브젝트를 가지고 있지 않다면
+            if (player.HasKitchenObject())
+            {
+                // 플레이어가 오브젝트를 가지고 있다면
+                // 플레이어의 주방 오브젝트를 이 카운터의 자식으로 설정
+                player.GetKitchenObject().SetKitchenObjectParent(this);
 
-            fryingRecipeSO = GetCorrectFryingRecipe(GetKitchenObject().GetKitchenObjectSO());
-            burningRecipeSO = GetCorrectBurningRecipe(GetKitchenObject().GetKitchenObjectSO());
-            if (fryingRecipeSO != null)
-            {
-                state = State.Frying; // 조리 중 상태로 변경
-                fryingTimer = 0f;
-                OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs {
-                    progressAmount = fryingTimer / fryingRecipeSO.fryingTimerMax
-                });
-            }
-            else if (burningRecipeSO != null)
-            {
-                state = State.Fried; // 익힌 상태로 변경
-                burningTimer = 0f;
-                OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs {
-                    progressAmount = burningTimer / burningRecipeSO.burningTimerMax
-                });
-            }
-            else
-            {
-                state = State.Idle; // 조리 중 상태가 아님
-                Debug.Log("Not a Fryable Object!");
+                fryingRecipeSO = GetCorrectFryingRecipe(GetKitchenObject().GetKitchenObjectSO());
+                burningRecipeSO = GetCorrectBurningRecipe(GetKitchenObject().GetKitchenObjectSO());
+                if (fryingRecipeSO != null)
+                {
+                    state = State.Frying; // 조리 중 상태로 변경
+                    fryingTimer = 0f;
+                    OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs {
+                        progressAmount = fryingTimer / fryingRecipeSO.fryingTimerMax
+                    });
+                }
+                else if (burningRecipeSO != null)
+                {
+                    state = State.Fried; // 익힌 상태로 변경
+                    burningTimer = 0f;
+                    OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs {
+                        progressAmount = burningTimer / burningRecipeSO.burningTimerMax
+                    });
+                }
+                else
+                {
+                    state = State.Idle; // 조리 중 상태가 아님
+                    Debug.Log("Not a Fryable Object!");
+                }
             }
         }
         else {
-            if (!player.HasKitchenObject() && HasKitchenObject())
+            // 이 카운터가 오브젝트를 가지고 있다면
+            if (player.HasKitchenObject())
+            {
+                // 플레이어가 오브젝트를 가지고 있다면
+                // 접시인지 확인후
+                if (player.GetKitchenObject().TryGetPlate(out PlateKitchenObject plateKitchenObject))
+                {
+                    // 플레이어가 접시를 가지고 있다면
+                    // 접시에 올려 보고
+                    if (plateKitchenObject.TryAddIngredient(GetKitchenObject().GetKitchenObjectSO()))
+                    {
+                        // 제대로 접시에 올려졌다면
+                        GetKitchenObject().DestroySelf(); // 카운터에 있는 오브젝트를 파괴
+                        state = State.Idle;
+                        fryingTimer = 0f; // 타이머 초기화
+                        burningTimer = 0f; // 타이머 초기화
+
+                        OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs {
+                            progressAmount = 0
+                        });
+                    }
+                }
+                else
+                {
+                    // 플레이가 들고 있는게 접시가 아니다!
+
+                    // 그럼 카운터에 있는 오브젝트는 접시인가?
+                    if (GetKitchenObject().TryGetPlate(out plateKitchenObject))
+                    {
+                        // 접시가 맞다면
+                        // 플레이어가 가지고 있는 오브젝트를 접시에 올려보고
+                        if (plateKitchenObject.TryAddIngredient(player.GetKitchenObject().GetKitchenObjectSO()))
+                        {
+                            // 제대로 접시에 올려졌다면
+                            // 플레이어가 가지고 있는 오브젝트를 파괴
+                            player.GetKitchenObject().DestroySelf();
+                            state = State.Idle;
+                            fryingTimer = 0f; // 타이머 초기화
+                            burningTimer = 0f; // 타이머 초기화
+
+                            OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs {
+                                progressAmount = 0
+                            });
+                        }
+                    }
+                }
+            }
+            else
             {
                 GetKitchenObject().SetKitchenObjectParent(player);
                 state = State.Idle;
                 fryingTimer = 0f; // 타이머 초기화
                 burningTimer = 0f; // 타이머 초기화
+
+                OnProgressChanged?.Invoke(this, new IHasProgress.OnProgressChangedEventArgs {
+                    progressAmount = 0
+                });
             }
         }
 

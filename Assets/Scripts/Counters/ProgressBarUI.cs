@@ -17,12 +17,12 @@ public class ProgressBarUI : MonoBehaviour
             Debug.LogError("Game Object " + hasProgressGameObject + " does not have a implemens IHasProgess");
             return;
         }
-        hasProgress.OnProgressChanged += HasPrgress_OnProgressChanged;
+        hasProgress.OnProgressChanged += HasProgress_OnProgressChanged;
         barImage.fillAmount = 0;
         gameObject.SetActive(false);
     }
 
-    private void HasPrgress_OnProgressChanged(object sender, IHasProgress.OnProgressChangedEventArgs e)
+    private void HasProgress_OnProgressChanged(object sender, IHasProgress.OnProgressChangedEventArgs e)
     {
         barImage.fillAmount = e.progressAmount;
         bool show = e.progressAmount > 0 && e.progressAmount < 1;
