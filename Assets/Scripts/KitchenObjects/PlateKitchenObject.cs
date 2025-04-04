@@ -62,4 +62,9 @@ public class PlateKitchenObject : KitchenObject
         }
         return false; // 고기가 추가되지 않은 경우
     }
+
+    public List<KitchenObjectSO> GetKitchenObjectSOList()
+    {
+        return kitchenObjectSOList; // 접시에 담긴 재료 리스트 반환
+    }
 }
