@@ -10,15 +10,7 @@ public class DeliveryCounter : BaseCounter
             if (player.GetKitchenObject().TryGetPlate(out PlateKitchenObject plateKitchenObject))
             {
                 // 플레이어의 오브젝트가 PlateKitchenObject인 경우
-                if(DeliveryManager.Instance.DeliverRecipe(plateKitchenObject)) // 서빙 실행
-                {
-                    // 서빙 성공
-                }
-                else
-                {
-                    // 서빙 실패
-                }
-
+                DeliveryManager.Instance.DeliverRecipe(plateKitchenObject);
                 plateKitchenObject.DestroySelf(); // 접시 제거
             }
         }

@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: MegaBurger
   m_EditorClassIdentifier: 
   kitchenObjectSOList:
-  - {fileID: 11400000, guid: 6611e5ecb6ef4214ca67a50d44bdd250, type: 2}
   - {fileID: 11400000, guid: febecc658eb86c24e943083faec59fc8, type: 2}
+  - {fileID: 11400000, guid: 6611e5ecb6ef4214ca67a50d44bdd250, type: 2}
   - {fileID: 11400000, guid: 8a97188c6cac90544881aa46c9708b92, type: 2}
   - {fileID: 11400000, guid: d78919604cdf2544d808405a96c3bc0c, type: 2}
   - {fileID: 11400000, guid: 7f7036bb77aa84e448bf0df4e6f7d687, type: 2}

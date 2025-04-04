@@ -1,8 +1,17 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class DeliveryManager : MonoBehaviour
 {
+    public event EventHandler<OnRecipeEventArgs> OnRecipeSpawned;   // 주문이 들어올 때 발생하는 이벤트
+    public event EventHandler<OnRecipeEventArgs> OnRecipeCompleted; // 주문을 성공적으로 서빙했을때 발생하는 이벤트
+    public event EventHandler OnRecipeFailed;                       // 주문 서빙에 실패했을 때 발생하는 이벤트
+    public class OnRecipeEventArgs : EventArgs
+    {
+        public RecipeSO recipeSO; // 서빙에 성공한 RecipeSO
+    }
+
     public static DeliveryManager Instance { get; private set; } // 싱글톤 인스턴스
 
     [SerializeField] private RecipeListSO availableRecipes; // 주문이 들어올수 있는 레시피 리스트
@@ -35,14 +44,22 @@ public class DeliveryManager : MonoBehaviour
                 waitingRecipeCount++; // 대기중인 주문 수 증가
 
                 // 주문이 들어올 수 있는 레시피 리스트에서 랜덤으로 레시피 선택
-                RecipeSO orderRecipe = availableRecipes.recipeSOList[Random.Range(0, availableRecipes.recipeSOList.Count)]; // 랜덤으로 레시피 선택
+                RecipeSO orderRecipe = availableRecipes.recipeSOList[UnityEngine.Random.Range(0, availableRecipes.recipeSOList.Count)]; // 랜덤으로 레시피 선택
                 Debug.Log("주문이 들어왔습니다: " + orderRecipe.recipeName); // 주문된 레시피 이름 출력
                 waitingRecipeSOList.Add(orderRecipe);
+
+                OnRecipeSpawned?.Invoke(this, new OnRecipeEventArgs{
+                    recipeSO = orderRecipe
+                }); // 주문이 들어왔을 때 발생하는 이벤트 호출
+            }
+            else 
+            {
+                spawnRecipeTimer = spawnRecipeTimerMax;
             }
         }
     }
 
-    public bool DeliverRecipe(PlateKitchenObject plateKitchenObject)
+    public void DeliverRecipe(PlateKitchenObject plateKitchenObject)
     {
         for (int i = 0; i < waitingRecipeSOList.Count; i++)
         {
@@ -82,12 +99,23 @@ public class DeliveryManager : MonoBehaviour
                 Debug.Log("서빙 완료 : " + waitingRecipeSO.recipeName); // 주문 성공 메시지 출력
                 waitingRecipeSOList.RemoveAt(i);                        // 주문 리스트에서 제거
                 waitingRecipeCount--;                                   // 대기중인 주문 수 감소
-            return true;                                                // 메소드 종료
+
+                OnRecipeCompleted?.Invoke(this, new OnRecipeEventArgs {
+                    recipeSO = waitingRecipeSO
+                });
+
+            return;                                                // 메소드 종료
             }
         }
 
         // 서빙 실패
         Debug.Log("서빙 실패! 일치하는 주문 레시피가 없습니다."); // 주문 실패 메시지 출력
-        return false;
+        OnRecipeFailed?.Invoke(this, EventArgs.Empty); // 주문 실패 이벤트 호출
+        return;
+    }
+
+    public List<RecipeSO> GetWaitingRecipeSOList()
+    {
+        return waitingRecipeSOList; // 대기중인 주문 리스트 반환
     }
 }
