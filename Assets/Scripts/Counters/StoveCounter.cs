@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class StoveCounter : BaseCounter, IHasProgress
 {
-    public event EventHandler<OnStateChangedEventArgs> OnStateChanged;   // 상태 변경 이벤트
     public event EventHandler<IHasProgress.OnProgressChangedEventArgs> OnProgressChanged; // 진행도 변경 이벤트
 
+    public event EventHandler<OnStateChangedEventArgs> OnStateChanged;   // 상태 변경 이벤트
     public class OnStateChangedEventArgs : EventArgs
     {
         public State state;

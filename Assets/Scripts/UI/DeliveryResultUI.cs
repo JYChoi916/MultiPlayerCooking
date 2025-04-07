@@ -7,6 +7,7 @@ public class DeliveryResultUI : MonoBehaviour
 {
     private const string POP_UP = "Popup"; // 애니메이션 트리거 파라미터 이름름
 
+    [SerializeField] private DeliveryCounter deliveryCounter; // 배달 카운터
     [SerializeField] private Image backgroundImage;       // 배경 이미지
     [SerializeField] private Image iconImage;             // 아이콘 이미지
     [SerializeField] private TextMeshProUGUI messageText; // 메시지 텍스트
@@ -23,13 +24,15 @@ public class DeliveryResultUI : MonoBehaviour
 
     private void Start()
     {
-        DeliveryManager.Instance.OnRecipeCompleted += DeliveryManager_OnRecipeCompleted; // 레시피 완료 이벤트 구독
+        DeliveryManager.Instance.OnRecipeSuccess += DeliveryManager_OnRecipeSuccess; // 레시피 완료 이벤트 구독
         DeliveryManager.Instance.OnRecipeFailed += DeliveryManager_OnRecipeFailed; // 레시피 실패 이벤트 구독
         gameObject.SetActive(false);
     }
 
-    private void DeliveryManager_OnRecipeCompleted(object sender, DeliveryManager.OnRecipeEventArgs e)
-    {
+    private void DeliveryManager_OnRecipeSuccess(object sender, DeliveryManager.OnDeliveredEventArgs e)
+    {   
+        if (e.counter != deliveryCounter) return;
+
         gameObject.SetActive(true); // UI 활성화
         animator.SetTrigger(POP_UP); // 애니메이션 트리거 설정
         backgroundImage.color = successColor;
@@ -37,8 +40,10 @@ public class DeliveryResultUI : MonoBehaviour
         messageText.text = "DELIVERY\nSUCCESS";
     }
 
-    private void DeliveryManager_OnRecipeFailed(object sender, EventArgs e)
+    private void DeliveryManager_OnRecipeFailed(object sender, DeliveryManager.OnDeliveredEventArgs e)
     {
+        if (e.counter != deliveryCounter) return;
+
         gameObject.SetActive(true); // UI 활성화
         animator.SetTrigger(POP_UP); // 애니메이션 트리거 설정
         backgroundImage.color = failColor;

@@ -335,6 +335,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8856cb207b3a95847ab658c4446c3cbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  deliveryCounter: {fileID: 7121459343489602504}
   backgroundImage: {fileID: 9165142139336697700}
   iconImage: {fileID: 8534001806864014615}
   messageText: {fileID: 6774460037679898391}

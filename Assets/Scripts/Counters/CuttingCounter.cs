@@ -4,6 +4,13 @@ using UnityEngine.EventSystems;
 
 public class CuttingCounter : BaseCounter, IHasProgress
 {
+    public static void ResetStaticData()
+    {
+        OnAnyCut = null;        
+    }
+
+    public static event EventHandler OnAnyCut;
+
     [SerializeField] private CuttingRecipeSO[] cuttingRecipeSOArray;
 
     private int cuttingProgress = 0;
@@ -81,6 +88,8 @@ public class CuttingCounter : BaseCounter, IHasProgress
             if (correctRecipeSO != null)
             {
                 cuttingProgress++;
+
+                OnAnyCut?.Invoke(this, EventArgs.Empty); // 컷팅 이벤트 발생
 
                 if (cuttingProgress >= correctRecipeSO.cuttingProgressMax)
                 {
